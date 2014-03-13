@@ -59,6 +59,18 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* -s var val: assign var to val */
+        if (!strcmp (argv[i], "-s")) {
+            if (i+2 >= argc) {
+                fprintf (stderr, "Not enough arguments give.\n");
+                Tcl_DeleteInterp (interp);
+                return 1;
+            }
+            Tcl_SetVar (interp, argv[i+1], argv[i+2], 0);
+            i+=2;
+            continue;
+        }
+
         ret = Tcl_Eval (interp, argv[i]);
         res = Tcl_GetStringResult (interp);
         if (ret != TCL_OK) {

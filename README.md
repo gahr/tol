@@ -22,3 +22,9 @@ $ ./tol 'set a 2' 'puts $a'
 $ ./tol 'set a 2' -r 'puts $a'
 
 Arg 3, line 1: can't read "a": no such variable.
+
+The -s var val can be used to set $var to the value val inside the interpreter.
+
+$ ./tol -s home $HOME 'puts "we are living in $home"'
+
+we are living in /Users/pietrocerutti
