@@ -62,7 +62,7 @@ int main (int argc, char **argv)
         /* -s var val: assign var to val */
         if (!strcmp (argv[i], "-s")) {
             if (i+2 >= argc) {
-                fprintf (stderr, "Not enough arguments give.\n");
+                fprintf (stderr, "Not enough arguments given.\n");
                 Tcl_DeleteInterp (interp);
                 return 1;
             }
