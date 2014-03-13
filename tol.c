@@ -53,8 +53,8 @@ int main (int argc, char **argv)
             continue;
         }
 
-        /* -v : print the result */
-        if (!strcmp (argv[i], "-v")) {
+        /* -v, -p: print the result */
+        if (!strcmp (argv[i], "-v") || !strcmp (argv[i], "-p")) {
             verbose = 1;
             continue;
         }
