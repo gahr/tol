@@ -5,7 +5,7 @@ $ ./tol 'puts Hello'
 
 Hello
 
-The -v switch makes tol print result of the following expression.
+The -v switch makes tol print the result of the following expression.
 
 $ ./tol -v 'expr {1+2}'
 
