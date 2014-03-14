@@ -26,6 +26,8 @@
 #include <tcl.h>
 #include <string.h>
 
+#include "tolConfig.h"
+
 #if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 6)
 #define Tcl_GetErrorLine(interp) ((interp)->errorLine)
 #endif
@@ -46,6 +48,16 @@ int main (int argc, char **argv)
 
     for (int i=1; i<argc; i++) {
 
+        /*
+         * Handle options
+         */
+
+        /* -p : print the result */
+        if (!strcmp (argv[i], "-p")) {
+            verbose = 1;
+            continue;
+        }
+
         /* -r : recreate the interpreter */
         if (!strcmp (argv[i], "-r")) {
             Tcl_DeleteInterp (interp);
@@ -53,13 +65,7 @@ int main (int argc, char **argv)
             continue;
         }
 
-        /* -v, -p: print the result */
-        if (!strcmp (argv[i], "-v") || !strcmp (argv[i], "-p")) {
-            verbose = 1;
-            continue;
-        }
-
-        /* -s var val: assign var to val */
+        /* -s var val : assign var to val */
         if (!strcmp (argv[i], "-s")) {
             if (i+2 >= argc) {
                 fprintf (stderr, "Not enough arguments given.\n");
@@ -70,6 +76,28 @@ int main (int argc, char **argv)
             i+=2;
             continue;
         }
+
+        /* -v : print version info (and keep going)*/
+        if (!strcmp (argv[i], "-v")) {
+            puts (
+                  "tol version " TOL_VERS " (" TOL_TIME ")\n\n"
+                  "Copyright (C) 2014 Pietro Cerutti <gahr@gahr.ch>\n\n"
+                  "Redistribution and use in source and binary forms, with or without\n"
+                  "modification, are permitted under the 2-clause BSD License.\n\n"
+                  "Usage: tol ?arg ...?\n\n"
+                  "        arg          Evaluate the Tcl script inside 'arg'.\n"
+                  "        -p           Print the result of the script in the following argument.\n"
+                  "        -r           Reset the interpreter.\n"
+                  "        -s var val   Assign the value 'val' to the variable 'var'.\n"
+                  "        -v           Display this message\n"
+                 );
+            continue;
+        }
+
+
+        /*
+         * Not an option, eval it
+         */
 
         ret = Tcl_Eval (interp, argv[i]);
         res = Tcl_GetStringResult (interp);
