@@ -21,18 +21,22 @@ State is maintained from the evaluation of an argument to the next one...
         while executing
     "puts $a"
 
-
 Errors in an arguments can be ignored with the -i switch.
 
     $ ./tol 'puts before' 'set a 2' -r -i 'puts $a' 'puts after'
     before
     after
 
-
 The -s var val can be used to set $var to the value val inside the interpreter.
 
     $ ./tol -s home $HOME 'puts "we are living in $home"'
     we are living in /Users/pietrocerutti
 
+The -c switch can be used to avoid prematurely evaluating incomplete commands.
 
-
+    $ ./tol -c 'set vars [dict create' \
+        -c editor -c $EDITOR \
+        -c pager -c $PAGER ']' \
+        'foreach {k v} $vars {puts "$k => $v"}'
+    editor => vim
+    pager => less
