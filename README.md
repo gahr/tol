@@ -1,4 +1,4 @@
-Tcl One Liner is a simple tool that allows to execute simple Tcl
+Tcl One-Liner is a simple tool that allows to execute simple Tcl
 one-liners on the console.
 
     $ ./tol 'puts Hello'
