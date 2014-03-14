@@ -21,10 +21,24 @@ $ ./tol 'set a 2' 'puts $a'
 
 $ ./tol 'set a 2' -r 'puts $a'
 
-Arg 3, line 1: can't read "a": no such variable.
+can't read "a": no such variable
+    while executing
+"puts $a"
+
+
+Errors in an arguments can be ignored with the -i switch.
+
+$ ./tol 'puts before' 'set a 2' -r -i 'puts $a' 'puts after'
+
+before
+after
+
 
 The -s var val can be used to set $var to the value val inside the interpreter.
 
 $ ./tol -s home $HOME 'puts "we are living in $home"'
 
 we are living in /Users/pietrocerutti
+
+
+
