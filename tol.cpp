@@ -3,7 +3,6 @@
  * See tol.h for the COPYRIGHT notice.
  */
 
-
 #include <algorithm>
 #include <cstring>
 #include <iostream>
