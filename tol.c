@@ -85,11 +85,11 @@ int main (int argc, char **argv)
                   "Redistribution and use in source and binary forms, with or without\n"
                   "modification, are permitted under the 2-clause BSD License.\n\n"
                   "Usage: tol ?arg ...?\n\n"
-                  "        arg          Evaluate the Tcl script inside 'arg'.\n"
-                  "        -p           Print the result of the script in the following argument.\n"
-                  "        -r           Reset the interpreter.\n"
-                  "        -s var val   Assign the value 'val' to the variable 'var'.\n"
-                  "        -v           Display this message\n"
+                  "  arg         Evaluate the Tcl script inside 'arg'.\n"
+                  "  -p          Print the result of the script in the following argument.\n"
+                  "  -r          Reset the interpreter.\n"
+                  "  -s var val  Assign the value 'val' to the variable 'var'.\n"
+                  "  -v          Display this message\n"
                  );
             continue;
         }
