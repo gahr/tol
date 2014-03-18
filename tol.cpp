@@ -66,7 +66,7 @@ Tol::Run ()
         return 0;
     }
 
-    std::string command;
+    std::string cmd;
 
     /*
      * Unfortunately I can't iterate over arguments with a more
@@ -124,15 +124,15 @@ Tol::Run ()
          * Options are done. Assume the current argument is part of a
          * command to be evaluated.
          */
-        command.append (s);
+        cmd.append (s);
 
 
         /*
          * Skip evaluation of the command if Continue flag was used and
          * the command is not yet complete.
          */
-        if (IsFlagged (Flag::Continue) && !Tcl_CommandComplete (command.c_str())) {
-            command.append (" ");
+        if (IsFlagged (Flag::Continue) && !Tcl_CommandComplete (cmd.c_str())) {
+            cmd.append (" ");
             ResetFlags ();
             continue;
         }
@@ -142,7 +142,7 @@ Tol::Run ()
          * Finally evaluate the command. Only report errors if the
          * IgnoreErrors flag wasn't used.
          */
-        auto res = Evaluate (command);
+        auto res = Evaluate (cmd);
 
         if (std::get<0> (res) != TCL_OK && !IsFlagged (Flag::IgnoreErrors)) {
             std::cerr << Tcl_GetVar (m_interp, "::errorInfo", 0) << std::endl;
@@ -159,7 +159,7 @@ Tol::Run ()
 
 
         ResetFlags ();
-        command.clear ();
+        cmd.clear ();
     }
 
     return 0;
