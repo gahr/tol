@@ -10,50 +10,71 @@
 void
 Tol::PrintVersion () const
 {
-    std::cout <<
-      "tol version " TOL_VERS " (" TOL_TIME ")\n\n"
-      "Copyright (C) 2014 Pietro Cerutti <gahr@gahr.ch>\n\n"
-      "Redistribution and use in source and binary forms, with or without\n"
-      "modification, are permitted under the 2-clause BSD License.\n\n"
-      "Usage: tol ?arg ...?\n\n"
-      "  arg         Evaluate the Tcl command inside 'arg'.\n"
-      "  -c          Evaluate the following argument if it is a complete\n"
-      "              Tcl command, or concatenate subsequent arguments up\n"
-      "              to the first one not preceeded by -c until they form\n"
-      "              a complete Tcl command.\n"
-      "  -e          Display some examples of usage\n"
-      "  -i          Ignore any errors from the following argument.\n"
-      "  -p          Print the result of the command in the following argument.\n"
-      "  -r          Reset the interpreter.\n"
-      "  -s var val  Assign the value 'val' to the variable 'var'.\n"
-      "  -v          Display this message\n\n";
+    std::cout << "tol version " TOL_VERS " (" TOL_TIME ")" << std::endl;
+}
+
+void
+Tol::PrintUsage () const
+{
+    PrintVersion ();
+    std::cout << R"(
+Copyright (C) 2014 Pietro Cerutti <gahr@gahr.ch>
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted under the 2-clause BSD License.
+
+Usage: tol ?arg ...?
+
+  arg         Evaluate the Tcl command inside 'arg'.
+  -c          Evaluate the following argument if it is a complete
+              Tcl command, or concatenate subsequent arguments up
+              to the first one not preceeded by -c until they form
+              a complete Tcl command.
+  -e          Display some examples of usage
+  -i          Ignore any errors from the following argument.
+  -p          Print the result of the command in the following argument.
+  -r          Reset the interpreter.
+  -s var val  Assign the value 'val' to the variable 'var'.
+  -v          Display this message.
+
+)";
 }
 
 void
 Tol::PrintExamples () const
 {
-    std::cout << 
-      "Examples:\n\n"
-      "./tol 'puts Hello'\n"
-      "Hello\n\n"
-      "./tol -p 'expr {1+2}'\n"
-      "3\n\n"
-      "./tol 'set a 2' 'puts $a'\n"
-      "2\n\n"
-      "./tol 'set a 2' -r 'puts $a'\n"
-      "can't read \"a\": no such variable\n"
-      "    while executing\n"
-      "\"puts $a\"\n\n"
-      "./tol 'puts before' 'set a 2' -r -i 'puts $a' 'puts after'\n"
-      "before\n"
-      "after\n\n"
-      "./tol -s home $HOME 'puts \"we are living in $home\"'\n"
-      "we are living in /Users/gahr\n\n"
-      "./tol -c 'set vars [dict create' \\\n"
-      "    -c editor -c $EDITOR \\\n"
-      "    -c pager -c $PAGER ']' \\\n"
-      "    'foreach {k v} $vars {puts \"$k => $v\"}'\n"
-      "editor => vim\n"
-      "pager => less\n"
-      "\n";
+    PrintVersion ();
+    std::cout << R"(
+Examples:
+
+tol 'puts Hello'
+>> Hello
+
+tol -p 'expr {1+2}'
+>> 3
+
+tol 'set a 2' 'puts $a'
+>> 2
+
+tol 'set a 2' -r 'puts $a'
+>> can't read "a": no such variable
+>>    while executing
+>> "puts $a"
+
+tol 'puts before' 'set a 2' -r -i 'puts $a' 'puts after'
+>> before
+>> after
+
+tol -s home $HOME 'puts "we are living in $home"'
+>> we are living in /Users/gahr
+
+tol -c 'set vars [dict create' \
+    -c editor -c $EDITOR \
+    -c pager -c $PAGER ']' \
+    'foreach {k v} $vars {\
+        puts "$k => $v"\
+     }'
+>> editor => vim
+>> pager => less
+)";
 }

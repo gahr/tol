@@ -115,7 +115,7 @@ Tol::Run ()
         }
 
         if (s == "-v") {
-            PrintVersion ();
+            PrintUsage ();
             continue;
         }
 

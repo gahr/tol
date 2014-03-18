@@ -71,6 +71,7 @@ class Tol {
         Evaluate (const std::string &command);
 
         void PrintVersion () const;
+        void PrintUsage () const;
         void PrintExamples () const;
 
     private:
