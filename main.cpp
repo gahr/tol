@@ -6,8 +6,8 @@
 #include "tol.h"
 
 int
-main (int argc, char** argv)
+main(int argc, char ** argv)
 {
-    Tol t (argc, argv);
-    return t.Run ();
+    Tol t { argc, argv };
+    return t.Run();
 }

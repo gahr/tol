@@ -10,57 +10,56 @@
 
 #include "tol.h"
 
-Tol::Tol (int& argc, char** argv)
-    : m_interp {nullptr},
-      m_flags  {0}
+Tol::Tol (int& argc, char ** argv)
+    : m_interp { nullptr },
+      m_flags  { 0 }
 {
-    Tcl_FindExecutable (argv[0]);
-    CreateInterp ();
-    std::copy (argv+1, argv+argc, std::back_inserter (m_args));
+    Tcl_FindExecutable(argv[0]);
+    CreateInterp();
+    std::copy(argv+1, argv+argc, std::back_inserter(m_args));
 }
 
 Tol::~Tol ()
 {
-    DeleteInterp ();
+    DeleteInterp();
 }
 
 void
-Tol::CreateInterp ()
+Tol::CreateInterp()
 {
-    m_interp = Tcl_CreateInterp ();
-    Tcl_Init (m_interp);
+    m_interp = Tcl_CreateInterp();
+    Tcl_Init(m_interp);
 }
 
 void
-Tol::DeleteInterp ()
+Tol::DeleteInterp()
 {
     if (m_interp != nullptr) {
-        Tcl_DeleteInterp (m_interp);
+        Tcl_DeleteInterp(m_interp);
         m_interp = nullptr;
     }
 }
 
 void
-Tol::ResetState ()
+Tol::ResetState()
 {
-    ResetFlags ();
-    DeleteInterp ();
-    CreateInterp ();
+    ResetFlags();
+    DeleteInterp();
+    CreateInterp();
 }
 
 std::pair<int, std::string>
-Tol::Evaluate (const std::string &command)
+Tol::Evaluate(const std::string& command)
 {
-
-    Tcl_ResetResult (m_interp);
-    return std::make_pair (
-            Tcl_Eval (m_interp, command.c_str()), 
-            Tcl_GetStringFromObj (Tcl_GetObjResult (m_interp), NULL)
-            );
+    Tcl_ResetResult(m_interp);
+    return std::make_pair(
+        Tcl_Eval(m_interp, command.c_str()),
+        Tcl_GetStringFromObj(Tcl_GetObjResult(m_interp), NULL)
+        );
 }
 
 int
-Tol::Run ()
+Tol::Run()
 {
     if (m_args.size() == 0) {
         return 0;
@@ -71,36 +70,36 @@ Tol::Run ()
     /*
      * Unfortunately I can't iterate over arguments with a more
      * convenient range-for because I have to manually increment
-     * the iterator skip over options.
+     * the iterator to skip over options.
      */
     for (auto i = m_args.cbegin(); i != m_args.cend(); ++i) {
-        auto &s = *i;
+        const auto& s = *i;
 
         /*
          * Handle options
          */
         if (s == "-c") {
-            SetFlag (Flag::Continue);
+            SetFlag(Flag::Continue);
             continue;
         }
 
         if (s == "-e") {
-            PrintExamples ();
+            PrintExamples();
             continue;
         }
 
         if (s == "-i") {
-            SetFlag (Flag::IgnoreErrors);
+            SetFlag(Flag::IgnoreErrors);
             continue;
         }
 
         if (s == "-p") {
-            SetFlag (Flag::PrintResult);
+            SetFlag(Flag::PrintResult);
             continue;
         }
 
         if (s == "-r") {
-            ResetState ();
+            ResetState();
             continue;
         }
 
@@ -109,13 +108,13 @@ Tol::Run ()
                 std::cerr << "Not enough arguments given." << std::endl;
                 return 1;
             }
-            Tcl_SetVar (m_interp, (i+1)->c_str(), (i+2)->c_str(), 0);
+            Tcl_SetVar(m_interp, (i+1)->c_str(), (i+2)->c_str(), 0);
             i += 2;
             continue;
         }
 
         if (s == "-v") {
-            PrintUsage ();
+            PrintUsage();
             continue;
         }
 
@@ -124,28 +123,28 @@ Tol::Run ()
          * Options are done. Assume the current argument is part of a
          * command to be evaluated.
          */
-        cmd.append (s);
+        cmd.append(s);
 
 
         /*
          * Skip evaluation of the command if Continue flag was used and
          * the command is not yet complete.
          */
-        if (IsFlagged (Flag::Continue) && !Tcl_CommandComplete (cmd.c_str())) {
-            cmd.append (" ");
-            ResetFlags ();
+        if (IsFlagged(Flag::Continue) && !Tcl_CommandComplete(cmd.c_str())) {
+            cmd.append(" ");
+            ResetFlags();
             continue;
         }
 
-        
+
         /*
          * Finally evaluate the command. Only report errors if the
          * IgnoreErrors flag wasn't used.
          */
-        auto res = Evaluate (cmd);
+        auto res = Evaluate(cmd);
 
-        if (std::get<0> (res) != TCL_OK && !IsFlagged (Flag::IgnoreErrors)) {
-            std::cerr << Tcl_GetVar (m_interp, "::errorInfo", 0) << std::endl;
+        if (std::get<0>(res) != TCL_OK && !IsFlagged(Flag::IgnoreErrors)) {
+            std::cerr << Tcl_GetVar(m_interp, "::errorInfo", 0) << std::endl;
             return 1;
         }
 
@@ -153,13 +152,13 @@ Tol::Run ()
         /*
          * Avoid printing blank lines by skipping over empty results
          */
-        if (IsFlagged (Flag::PrintResult) && !std::get<1> (res).empty ()) {
-            std::cout << std::get<1> (res) << std::endl;
+        if (IsFlagged(Flag::PrintResult) && !std::get<1>(res).empty()) {
+            std::cout << std::get<1>(res) << std::endl;
         }
 
 
-        ResetFlags ();
-        cmd.clear ();
+        ResetFlags();
+        cmd.clear();
     }
 
     return 0;

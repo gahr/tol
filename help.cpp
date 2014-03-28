@@ -8,15 +8,15 @@
 #include "tol.h"
 
 void
-Tol::PrintVersion () const
+Tol::PrintVersion() const
 {
     std::cout << "tol version " TOL_VERS " (" TOL_TIME ")" << std::endl;
 }
 
 void
-Tol::PrintUsage () const
+Tol::PrintUsage() const
 {
-    PrintVersion ();
+    PrintVersion();
     std::cout << R"(
 Copyright (C) 2014 Pietro Cerutti <gahr@gahr.ch>
 
@@ -41,9 +41,9 @@ Usage: tol ?arg ...?
 }
 
 void
-Tol::PrintExamples () const
+Tol::PrintExamples() const
 {
-    PrintVersion ();
+    PrintVersion();
     std::cout << R"(
 Examples:
 
