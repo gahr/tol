@@ -26,6 +26,7 @@ modification, are permitted under the 2-clause BSD License.
 Usage: tol ?arg ...?
 
   arg         Evaluate the Tcl command inside 'arg'.
+  -a          Accumulate arguments and evaluate them only at the end.
   -c          Evaluate the following argument if it is a complete
               Tcl command, or concatenate subsequent arguments up
               to the first one not preceeded by -c until they form
@@ -35,7 +36,7 @@ Usage: tol ?arg ...?
   -p          Print the result of the command in the following argument.
   -r          Reset the interpreter.
   -s var val  Assign the value 'val' to the variable 'var'.
-  -v          Display this message.
+  -h, -v      Display this message.
 
 )";
 }
@@ -76,5 +77,8 @@ tol -c 'set vars [dict create' \
      }'
 >> editor => vim
 >> pager => less
+
+tol -p -a clock format 1234567890
+>> Fri Feb 13 23:31:30 UTC 2009
 )";
 }

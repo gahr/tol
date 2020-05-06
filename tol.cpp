@@ -48,14 +48,29 @@ Tol::ResetState()
     CreateInterp();
 }
 
-std::pair<int, std::string>
-Tol::Evaluate(const std::string& command)
+int Tol::Evaluate(const std::string& command)
 {
     Tcl_ResetResult(m_interp);
-    return std::make_pair(
-        Tcl_Eval(m_interp, command.c_str()),
-        Tcl_GetStringFromObj(Tcl_GetObjResult(m_interp), NULL)
-        );
+
+    int res { Tcl_Eval(m_interp, command.c_str()) };
+    std::string out { Tcl_GetStringFromObj(Tcl_GetObjResult(m_interp), NULL) };
+
+    if (res != TCL_OK) {
+       if (!IsFlagged(Flag::IgnoreErrors)) {
+        std::cerr << Tcl_GetVar(m_interp, "::errorInfo", 0) << std::endl;
+        return res;
+       }
+       res = TCL_OK;
+    }
+
+    /*
+     * Avoid printing blank lines by skipping over empty results
+     */
+    if (IsFlagged(Flag::PrintResult) && !out.empty()) {
+        std::cout << out << std::endl;
+    }
+
+    return res;
 }
 
 int
@@ -75,49 +90,64 @@ Tol::Run()
     for (auto i = m_args.cbegin(); i != m_args.cend(); ++i) {
         const auto& s = *i;
 
-        /*
-         * Handle options
-         */
-        if (s == "-c") {
-            SetFlag(Flag::Continue);
+        if (s.empty()) {
             continue;
         }
 
-        if (s == "-e") {
-            PrintExamples();
-            continue;
-        }
+        if (s.length() > 1 && s[0] == '-') {
+            bool handled = true;
 
-        if (s == "-i") {
-            SetFlag(Flag::IgnoreErrors);
-            continue;
-        }
+            /*
+             * Handle options
+             */
+            switch (s[1]) {
 
-        if (s == "-p") {
-            SetFlag(Flag::PrintResult);
-            continue;
-        }
+                case 'a':
+                    SetFlag(Flag::AccumulateCommands);
+                    break;
 
-        if (s == "-r") {
-            ResetState();
-            continue;
-        }
+                case 'c':
+                    SetFlag(Flag::Continue);
+                    break;
 
-        if (s == "-s") {
-            if (i+2 >= m_args.end()) {
-                std::cerr << "Not enough arguments given." << std::endl;
-                return 1;
-            }
-            Tcl_SetVar(m_interp, (i+1)->c_str(), (i+2)->c_str(), 0);
-            i += 2;
-            continue;
-        }
+                case 'e':
+                    PrintExamples();
+                    break;
 
-        if (s == "-v") {
-            PrintUsage();
-            continue;
-        }
+                case 'i':
+                    SetFlag(Flag::IgnoreErrors);
+                    break;
 
+                case 'p':
+                    SetFlag(Flag::PrintResult);
+                    break;
+
+                case 'r':
+                    ResetState();
+                    break;
+
+                case 's':
+                    if (i + 2 >= m_args.end()) {
+                        std::cerr << "Not enough arguments given." << std::endl;
+                        return 1;
+                    }
+                    Tcl_SetVar(m_interp, (i+1)->c_str(), (i+2)->c_str(), 0);
+                    i += 2;
+                    break;
+
+                case 'h':
+                case 'v':
+                    PrintUsage();
+                    break;
+
+                default:
+                    handled = false;
+                    break;
+                }
+
+            if (handled)
+                continue;
+        }
 
         /*
          * Options are done. Assume the current argument is part of a
@@ -138,27 +168,33 @@ Tol::Run()
 
 
         /*
-         * Finally evaluate the command. Only report errors if the
-         * IgnoreErrors flag wasn't used.
+         * Skip evaluation of the command if AccumulateCommands flag was used.
          */
-        auto res = Evaluate(cmd);
-
-        if (std::get<0>(res) != TCL_OK && !IsFlagged(Flag::IgnoreErrors)) {
-            std::cerr << Tcl_GetVar(m_interp, "::errorInfo", 0) << std::endl;
-            return 1;
+        if (IsFlagged(Flag::AccumulateCommands)) {
+            cmd.append(" ");
+            continue;
         }
 
 
         /*
-         * Avoid printing blank lines by skipping over empty results
+         * Finally evaluate the command. Only report errors if the
+         * IgnoreErrors flag wasn't used.
          */
-        if (IsFlagged(Flag::PrintResult) && !std::get<1>(res).empty()) {
-            std::cout << std::get<1>(res) << std::endl;
+        auto res = Evaluate(cmd);
+        if (res != TCL_OK)
+        {
+            return 1;
         }
-
 
         ResetFlags();
         cmd.clear();
+    }
+
+    /*
+     * Evaluate any remaining commands.
+     */
+    if (!cmd.empty()) {
+        return Evaluate(cmd);
     }
 
     return 0;

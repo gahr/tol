@@ -47,6 +47,7 @@ class Tol {
             Continue = 0,
             IgnoreErrors,
             PrintResult,
+            AccumulateCommands,
         };
 
         void SetFlag(Flag f)
@@ -73,8 +74,7 @@ class Tol {
         void DeleteInterp();
         void ResetState();
 
-        std::pair<int, std::string>
-        Evaluate(const std::string& command);
+        int Evaluate(const std::string& command);
 
         void PrintVersion() const;
         void PrintUsage() const;
