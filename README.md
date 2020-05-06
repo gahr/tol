@@ -40,3 +40,9 @@ The -c switch can be used to avoid prematurely evaluating incomplete commands.
         'foreach {k v} $vars {puts "$k => $v"}'
     editor => vim
     pager => less
+
+The -a switch can be use to accumulate arguments into full commands.
+
+    $ ./tol -a puts [clock format 1234567890]\; puts hello
+    Fri Feb 13 23:31:30 UTC 2009
+    hello
